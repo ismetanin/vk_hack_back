@@ -1,6 +1,8 @@
 
 from pymongo import MongoClient
 import os
+import time
+import hashlib
 
 class DBClient:
 
@@ -17,6 +19,27 @@ class MongoDBClient(DBClient):
 
     def __init__(self):
         self.client = MongoClient(os.environ['DB_HOST'], 27017)
+
+    def get_user_id_by_token(self, token):
+        sessions = self.client.db.sessions
+        user_session = sessions.find_one({"token": token})
+        if user_session is not None:
+            return user_session['user_id']
+        return None
+
+    def auth_user(self, user_id):
+        hash_str = hashlib.sha224(str(user_id)+str(time.time())).hexdigest()
+        sessions = self.client.db.sessions
+        user_session = sessions.find_one({"user_id": user_id})
+        if user_session is None:
+            data_dict = {
+                "user_id": user_id,
+                "token": hash_str 
+            }
+            object_id = sessions.insert_one(data_dict).inserted_id
+            user_session = sessions.find_one(object_id)
+        
+        return user_session['token']
 
     def get_user(self, id):
         users = self.client.db.users

@@ -53,14 +53,24 @@ def auth_user(vk_token, user_id, user_dict):
     if db_user is None:
         db_user = client.create_user(result_dict)
 
-    del db_user['_id']
-    del db_user['vk_token']
+    if db_user is not None:
+        auth_token = client.auth_user(user_id)
+        return auth_token
     
-    return db_user
-    
+    return None
+
+def get_user_id(token):
+    client = common.get_db()
+    user_id = client.get_user_id_by_token(token)
+    return user_id
 
 @api.route('/items', methods=['GET'])
 def get_tasks():
+    token = request.args.get('token')
+    user_id = get_user_id(token)
+    if user_id is None:
+        return jsonify({}), 401
+        
     return jsonify({'items': items})
 
 @api.route('/auth', methods=['POST'])
