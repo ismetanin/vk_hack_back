@@ -1,5 +1,6 @@
 
 from pymongo import MongoClient
+import os
 
 class DBClient:
 
@@ -15,7 +16,7 @@ class DBClient:
 class MongoDBClient(DBClient):
 
     def __init__(self):
-        self.client = MongoClient('0.0.0.0', 27017)
+        self.client = MongoClient(os.environ['DB_HOST'], 27017)
 
     def get_user(self, id):
         users = self.client.db.users
