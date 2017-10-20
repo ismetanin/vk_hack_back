@@ -15,7 +15,7 @@ class DBClient:
 class MongoDBClient(DBClient):
 
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
+        self.client = MongoClient('0.0.0.0', 27017)
 
     def get_user(self, id):
         users = self.client.db.users
