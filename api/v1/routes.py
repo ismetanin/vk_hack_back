@@ -1,12 +1,9 @@
 from flask import Flask, jsonify, abort, request 
-
 import json
-
 from . import *
-
 import vk
-
 import api.common as common
+import requests
 
 VK_INCORRECT_TOKEN_ID = 15
 
@@ -22,7 +19,33 @@ items = [
     }
 ]
 
-def get_user(vk_token, user_id):
+def get_vk_server_token(client_id, client_secret):
+    # Request (3)
+    # GET https://oauth.vk.com/access_token
+
+    result = None
+
+    try:
+        response = requests.get(
+            url="https://oauth.vk.com/access_token",
+            params={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "v": "5.68",
+                "grant_type": "client_credentials",
+            }
+        )
+        print('Response HTTP Status Code: {status_code}'.format(
+            status_code=response.status_code))
+        print('Response HTTP Response Body: {content}'.format(
+            content=response.content))
+        result = response.content
+    except requests.exceptions.RequestException:
+        print('HTTP Request failed')
+
+    return result
+
+def vk_get_user(vk_token, user_id):
     session = vk.Session(access_token=vk_token)
     vk_api = vk.API(session)
     return vk_api.users.get()
@@ -56,7 +79,8 @@ def get_vk_users():
 
     token = data_dict['token']
 
-    session = vk.Session(access_token=common.VK_SERVER_ACCESS_TOKEN)
+    vk_server_token = get_vk_server_token(client_id=common.VK_CLIENT_ID, client_secret=common.VK_CLIENT_SECRET)
+    session = vk.Session(access_token=vk_server_token)
     vk_api = vk.API(session)
     
     try:
@@ -64,7 +88,7 @@ def get_vk_users():
 
         user_token = token
         user_id = result['user_id']
-        user_data = get_user(user_token, user_id)
+        user_data = vk_get_user(user_token, user_id)
 
         if user_data:
             user_dict = user_data[0]

@@ -2,3 +2,4 @@ Flask
 pyopenssl
 vk
 pymongo
+requests
