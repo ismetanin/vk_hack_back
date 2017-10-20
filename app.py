@@ -1,10 +1,16 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g, current_app
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
 from api.v1 import api as api_v1
 
+from api.db import MongoDBClient
+
 __all__ = ['make_json_app']
+
+def make_db_connect():
+    db_client = MongoDBClient()
+    return db_client
 
 def make_json_app(import_name, **kwargs):
     """
@@ -27,6 +33,11 @@ def make_json_app(import_name, **kwargs):
 app = make_json_app('vk_hack_back')
 
 app.register_blueprint(api_v1, url_prefix='/v1')
+
+with app.app_context():
+    # within this block, current_app points to app.
+    print current_app.name
+    current_app._database = make_db_connect()
 
 @app.route('/')
 def hello_world():
