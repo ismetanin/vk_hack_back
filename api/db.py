@@ -25,6 +25,7 @@ class MongoDBClient(DBClient):
 
     def create_user(self, user_dict):
         users = self.client.db.users
-        user = users.insert_one(user_dict)
+        object_id = users.insert_one(user_dict).inserted_id
+        user = users.find_one(object_id)
         return user
 
