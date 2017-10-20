@@ -23,26 +23,16 @@ def get_vk_server_token(client_id, client_secret):
     # Request (3)
     # GET https://oauth.vk.com/access_token
 
-    result = None
+    response = requests.get(
+        url="https://oauth.vk.com/access_token",
+        params={
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "v": "5.68",
+            "grant_type": "client_credentials",
+        }
 
-    try:
-        response = requests.get(
-            url="https://oauth.vk.com/access_token",
-            params={
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "v": "5.68",
-                "grant_type": "client_credentials",
-            }
-        )
-        print('Response HTTP Status Code: {status_code}'.format(
-            status_code=response.status_code))
-        print('Response HTTP Response Body: {content}'.format(
-            content=response.content))
-        result = response.content
-    except requests.exceptions.RequestException:
-        print('HTTP Request failed')
-
+    result = json.loads(response.content)["access_token"]
     return result
 
 def vk_get_user(vk_token, user_id):
