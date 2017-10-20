@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from flask import Flask, jsonify, abort, request 
 import json
 from . import *
@@ -7,16 +9,43 @@ import requests
 
 VK_INCORRECT_TOKEN_ID = 15
 
-
-items = [
+users_stub = [
     {
-        'id': 1,
-        'title': u'First item'
+        'id': "94338550",
+        'name': u'Таянна Болгарова',
+        'avatarURLStrings': ['https://pp.userapi.com/c837122/v837122396/48393/j4A3iKYr1ZY.jpg'],
+        'gender': 'female',
+        'chatId': None,
+        'city': u'Санкт-Петербург',
+        'age': 24
     },
     {
-        'id': 2,
-        'title': u'Second item'
-    }
+        'id': "178469391",
+        'name': u'Екатерина Черняева',
+        'avatarURLStrings': ['https://pp.userapi.com/c836328/v836328586/3e3bf/Xu_ukzC3bXs.jpg'],
+        'gender': 'female',
+        'chatId': None,
+        'city': u'Санкт-Петербург',
+        'age': 26
+    },
+    {
+        'id': "35971840",
+        'name': u'Александра Закрева',
+        'avatarURLStrings': ['https://pp.userapi.com/c604327/v604327840/3a54e/jbGHKsABWuM.jpg'],
+        'gender': 'female',
+        'chatId': None,
+        'city': u'Санкт-Петербург',
+        'age': 27
+    },
+    {
+        'id': "58746319",
+        'name': u'Лилия Сальникова',
+        'avatarURLStrings': ['https://pp.userapi.com/c636228/v636228319/1805d/PIrIFeOF0-0.jpg'],
+        'gender': 'female',
+        'chatId': None,
+        'city': u'Санкт-Петербург',
+        'age': 30
+    },
 ]
 
 def get_vk_server_token(client_id, client_secret):
@@ -55,7 +84,7 @@ def auth_user(vk_token, user_id, user_dict):
 
     if db_user is not None:
         auth_token = client.auth_user(user_id)
-        return auth_token
+        return {"token": auth_token}
     
     return None
 
@@ -64,14 +93,14 @@ def get_user_id(token):
     user_id = client.get_user_id_by_token(token)
     return user_id
 
-@api.route('/items', methods=['GET'])
+@api.route('/users', methods=['GET'])
 def get_tasks():
     token = request.args.get('token')
     user_id = get_user_id(token)
     if user_id is None:
         return jsonify({}), 401
-        
-    return jsonify({'items': items})
+
+    return jsonify({'users': users_stub})
 
 @api.route('/auth', methods=['POST'])
 def get_vk_users():
