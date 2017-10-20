@@ -31,6 +31,7 @@ def get_vk_server_token(client_id, client_secret):
             "v": "5.68",
             "grant_type": "client_credentials",
         }
+    )
 
     result = json.loads(response.content)["access_token"]
     return result
