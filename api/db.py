@@ -22,10 +22,11 @@ class MongoDBClient(DBClient):
     def __init__(self):
         self.client = MongoClient(os.environ['DB_HOST'], 27017)
 
+
     def __clean(self, data, scope):
         if data is None:
             return None
-        
+
         del data['_id']
 
         if scope != 'raw':
@@ -33,12 +34,14 @@ class MongoDBClient(DBClient):
 
         return data
 
+
     def get_user_id_by_token(self, token):
         sessions = self.client.db.sessions
         user_session = sessions.find_one({"token": token})
         if user_session is not None:
             return user_session['user_id']
         return None
+
 
     def auth_user(self, user_id):
         hash_str = hashlib.sha224(str(user_id)+str(time.time())).hexdigest()
@@ -55,6 +58,7 @@ class MongoDBClient(DBClient):
         
         return user_session['token']
 
+
     def get_user(self, user_id):
         users = self.client.db.users
         user_id = str(user_id)
@@ -62,8 +66,10 @@ class MongoDBClient(DBClient):
         user = users.find_one({"id": user_id})
         return user
 
+
     def get_user_dict(self, user_id, scope='sec'):
         return self.__clean(self.get_user(user_id), scope)
+
 
     def create_user(self, user_dict):
         users = self.client.db.users
@@ -72,6 +78,7 @@ class MongoDBClient(DBClient):
         object_id = users.insert_one(user_dict).inserted_id
         user = users.find_one(object_id)
         return user
+
 
     def update_user(self, user_id, user_dict):
         users = self.client.db.users
@@ -85,9 +92,20 @@ class MongoDBClient(DBClient):
         user_id = str(user_id)
         users.update_one({'id': user_id}, {"$set": {USER_CATEGORIES_KEY: categories_list}}, upsert=False)
 
+
     def get_user_categories(self, user_id):
         user_id = str(user_id)
         user = self.get_user(user_id)
         if user is not None and USER_CATEGORIES_KEY in user:
             return user[USER_CATEGORIES_KEY]
         return None
+
+    def add_reaction(self, user_id, liked_id, reaction_type):
+        reactions = self.client.db.reactions
+        user_id = str(user_id)
+        liked_id = str(liked_id)
+        num = reactions.count({ "$and": [{"id": user_id }, {"reactions.user_id": liked_id}]})
+        if not num:
+            reactions.update({ "id": user_id },  { "$push": { "reactions": {"user_id": liked_id, "type": reaction_type } }}, upsert=True)
+        return None
+
