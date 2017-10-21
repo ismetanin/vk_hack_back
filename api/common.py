@@ -47,7 +47,7 @@ def map_vk_user_dict(vk_user_dict):
         return source_dict[value_key]
 
     def get_name_value(source_dict):
-        return u'%(first_name)s %(last_name)s' % source_dict
+        return u'%(first_name)s' % source_dict
 
     def get_city_value(source_dict):
         city_value_key = 'city'
