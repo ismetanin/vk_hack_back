@@ -18,10 +18,62 @@
         "parameters": [
           {
             "type": "string",
-            "default": "5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7",
+            "default": "353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb",
             "name": "token",
             "required": false,
             "in": "query"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
+    "/likes": {
+      "post": {
+        "summary": "Set Like",
+        "description": "",
+        "operationId": "10275ee0-76ef-48cd-87ef-286367aa7d68",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "{\"token\":\"353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb\",\"user_id\":\"123\"}"
+            },
+            "in": "body",
+            "name": "body"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
+    "/dislikes": {
+      "post": {
+        "summary": "Set Dislike",
+        "description": "",
+        "operationId": "bb9c6286-0340-4e7f-86fa-917513aa80bf",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "{\"token\":\"353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb\",\"user_id\":\"1234\"}"
+            },
+            "in": "body",
+            "name": "body"
           }
         ],
         "responses": {
@@ -39,7 +91,7 @@
         "parameters": [
           {
             "type": "string",
-            "default": "5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7",
+            "default": "353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb",
             "name": "token",
             "required": false,
             "in": "query"
@@ -60,7 +112,7 @@
         "parameters": [
           {
             "type": "string",
-            "default": "5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7",
+            "default": "353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb",
             "name": "token",
             "required": false,
             "in": "query"
@@ -77,14 +129,14 @@
         "description": "",
         "operationId": "054b8db8-64dc-4008-b87f-f4b1d6bf7b5e",
         "consumes": [
-          "text/plain"
+          "application/json"
         ],
         "parameters": [
           {
             "required": false,
             "schema": {
               "type": "string",
-              "default": "{\n\"token\": \"5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7\",\n\"ids\": [\"cinema\", \"lol\"]\n}"
+              "default": "{\"token\":\"353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb\",\"ids\":[\"cinema\",\"lol\"]}"
             },
             "in": "body",
             "name": "body"
