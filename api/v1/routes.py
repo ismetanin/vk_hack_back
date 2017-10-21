@@ -7,12 +7,14 @@ import vk
 import api.common as common
 import requests
 import datetime
+from time import sleep
 
 VK_INCORRECT_TOKEN_ID = 15
 
 def get_recomended_users(user):
     result_users = []
 
+    user_id = user['id']
     vk_token = user['vk_token']
 
     session = vk.Session(access_token=vk_token)
@@ -31,12 +33,27 @@ def get_recomended_users(user):
         return res_args
 
     res_args = make_filters()
-    
-    vk_users = vk_api.users.search(sort=0, count='10', has_photo=1, age_from=18, fields='photo_200_orig,sex,bdate,city,country', **res_args)['items']
 
-    print vk_users
+    client = common.get_db()
 
-    result_users = [common.map_vk_user_dict(vk_user) for vk_user in vk_users]
+    def load_users(offset, count):
+        vk_users = vk_api.users.search(offset=offset, sort=0, count=count, has_photo=1, age_from=18, age_to=39, fields='photo_200_orig,sex,bdate,city,country', **res_args)['items']
+        vk_users_ids = [str(vk_user['id']) for vk_user in vk_users]
+        not_viewed_ids = client.get_not_viewed(user_id, vk_users_ids)
+        not_viewed_vk_users = [vk_user for vk_user in vk_users if str(vk_user['id']) in not_viewed_ids]
+        not_viewed_users = [common.map_vk_user_dict(vk_user) for vk_user in not_viewed_vk_users]
+        non_null_viewed_users = [user_dict for user_dict in not_viewed_users if user_dict['id'] is not None and user_dict['age'] is not None]
+        return non_null_viewed_users
+
+    batch_count = 10
+    loaded_count = 0
+    result_users = []
+    while len(result_users) < batch_count:
+        result_users.extend(load_users(loaded_count, batch_count))
+        loaded_count += batch_count
+        if len(result_users) < batch_count:
+            sleep(0.5)
+
     return result_users
 
 def get_vk_server_token(client_id, client_secret):

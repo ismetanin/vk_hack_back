@@ -148,6 +148,18 @@ class MongoDBClient(DBClient):
                     break
         return self.__clean(result_item)
 
+    def get_not_viewed(self, user_id, user_ids):
+        reactions = self.client.db.reactions
+        user_id = str(user_id)
+        user_reaction = reactions.find_one({ "$and": [{"id": user_id }]})
+
+        viewed_user_ids = set([reaction['user_id'] for reaction in user_reaction['reactions']])
+
+        print viewed_user_ids
+        not_viewed_users = list(set(user_ids).difference(viewed_user_ids))
+        print not_viewed_users
+        return not_viewed_users
+
     def get_reactions(self, user_id, reaction_type):
         reactions = self.client.db.reactions
         user_id = str(user_id)
