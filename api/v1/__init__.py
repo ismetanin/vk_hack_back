@@ -5,6 +5,10 @@ import inspect
 
 api = Blueprint('api', __name__)
 
+def get_user(token):
+    client = common.get_db()
+    user_id = get_user_id(token)
+    return client.get_user_dict(user_id, scope='raw')
 
 def get_user_id(token):
     client = common.get_db()
@@ -26,9 +30,12 @@ def login_required(f):
             return jsonify({}), 401
 
         user_id_key = 'user_id'
+        user_dict_key = 'user'
         func_arg_names = inspect.getargspec(f).args
         if user_id_key in func_arg_names:
             kwargs[user_id_key] = user_id
+        if user_dict_key in func_arg_names:
+            kwargs[user_dict_key] = get_user(token)
         return f(*args, **kwargs)
     return decorated_function
 

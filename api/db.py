@@ -22,8 +22,15 @@ class MongoDBClient(DBClient):
     def __init__(self):
         self.client = MongoClient(os.environ['DB_HOST'], 27017)
 
-    def __clean(self, data):
+    def __clean(self, data, scope):
+        if data is None:
+            return None
+        
         del data['_id']
+
+        if scope != 'raw':
+            del data['vk_token']
+
         return data
 
     def get_user_id_by_token(self, token):
@@ -55,8 +62,8 @@ class MongoDBClient(DBClient):
         user = users.find_one({"id": user_id})
         return user
 
-    def get_user_dict(self, user_id):
-        return self.__clean(self.get_user(user_id))
+    def get_user_dict(self, user_id, scope='sec'):
+        return self.__clean(self.get_user(user_id), scope)
 
     def create_user(self, user_dict):
         users = self.client.db.users
