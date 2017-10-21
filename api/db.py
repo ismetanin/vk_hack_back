@@ -36,6 +36,7 @@ class MongoDBClient(DBClient):
     def auth_user(self, user_id):
         hash_str = hashlib.sha224(str(user_id)+str(time.time())).hexdigest()
         sessions = self.client.db.sessions
+        user_id = str(user_id)
         user_session = sessions.find_one({"user_id": user_id})
         if user_session is None:
             data_dict = {
@@ -49,6 +50,8 @@ class MongoDBClient(DBClient):
 
     def get_user(self, user_id):
         users = self.client.db.users
+        user_id = str(user_id)
+        print user_id
         user = users.find_one({"id": user_id})
         return user
 
@@ -57,15 +60,26 @@ class MongoDBClient(DBClient):
 
     def create_user(self, user_dict):
         users = self.client.db.users
+        user_id = str(user_dict["id"])
+        users.delete_many({"id": user_id})
         object_id = users.insert_one(user_dict).inserted_id
         user = users.find_one(object_id)
         return user
 
+    def update_user(self, user_id, user_dict):
+        users = self.client.db.users
+        user_id = str(user_id)
+        users.update_one({'id': user_id}, {"$set": user_dict}, upsert=False)
+
+        return self.get_user_dict(user_id)
+
     def update_categories(self, user_id, categories_list):
         users = self.client.db.users
+        user_id = str(user_id)
         users.update_one({'id': user_id}, {"$set": {USER_CATEGORIES_KEY: categories_list}}, upsert=False)
 
     def get_user_categories(self, user_id):
+        user_id = str(user_id)
         user = self.get_user(user_id)
         if user is not None and USER_CATEGORIES_KEY in user:
             return user[USER_CATEGORIES_KEY]

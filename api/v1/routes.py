@@ -6,6 +6,8 @@ from . import api, login_required
 import vk
 import api.common as common
 import requests
+import datetime
+from dateutil.relativedelta import relativedelta
 
 VK_INCORRECT_TOKEN_ID = 15
 
@@ -67,14 +69,72 @@ def get_vk_server_token(client_id, client_secret):
 
 def vk_get_user(vk_token, user_id):
     session = vk.Session(access_token=vk_token)
-    vk_api = vk.API(session)
-    return vk_api.users.get()
+    vk_api = vk.API(session, v='5.68')
+    return vk_api.users.get(fields='photo_200_orig,sex,bdate,city')
 
 def map_vk_user_dict(vk_user_dict):
-    result_dict = vk_user_dict
 
-    result_dict['id'] = str(result_dict['uid'])
-    del result_dict['uid']
+    def get_age_value(source_dict):
+        bdate_key = 'bdate'
+        if bdate_key not in source_dict:
+            return None
+        bdate = source_dict[bdate_key]
+        result_date = datetime.datetime.strptime(bdate, "%d.%m.%Y").date()
+        result_age = relativedelta(datetime.date.today(), result_date).years
+        return result_age
+
+    def get_id_value(source_dict):
+        value_key = 'id'
+        return str(source_dict[value_key])
+
+    def get_gender_value(source_dict):
+        value_key = 'sex'
+        if value_key not in source_dict:
+            return None
+        sex = source_dict[value_key]
+        
+        result_gender = None
+        if sex == 1:
+            result_gender = 'female'
+        elif sex == 2:
+            result_gender = 'male'
+        
+        return result_gender
+
+    def get_photo_value(source_dict):
+        value_key = 'photo_200_orig'
+        if value_key not in source_dict:
+            return None
+        return source_dict[value_key]
+
+    def get_name_value(source_dict):
+        return u'%(first_name)s %(last_name)s' % source_dict
+
+    def get_city_value(source_dict):
+        city_value_key = 'city'
+        city_title_value_key = 'title'
+
+        if city_value_key not in source_dict:
+            return None
+
+        city_dict = source_dict[city_value_key]
+
+        if city_title_value_key not in city_dict:
+            return None
+
+        return unicode(city_dict[city_title_value_key])
+
+    result_dict = {
+        'id': get_id_value(vk_user_dict),
+        'name': get_name_value(vk_user_dict),
+        'avatarURLStrings': [get_photo_value(vk_user_dict)],
+        'gender': get_gender_value(vk_user_dict),
+        'chatId': None,
+        'city': get_city_value(vk_user_dict),
+        'age': get_age_value(vk_user_dict)
+    }
+
+    print result_dict
 
     return result_dict
 
@@ -82,12 +142,14 @@ def auth_user(vk_token, user_id, user_dict):
     result_dict = map_vk_user_dict(user_dict)
 
     result_dict['vk_token'] = vk_token
-    
+
     client = common.get_db()
 
     db_user = client.get_user(user_id)
     if db_user is None:
         db_user = client.create_user(result_dict)
+    else:
+        db_user = client.update_user(user_id, result_dict)
 
     if db_user is not None:
         auth_token = client.auth_user(user_id)
@@ -104,7 +166,7 @@ def get_users():
 @login_required
 def get_profile(user_id):
     client = common.get_db()
-    user =  client.get_user_dict(user_id)
+    user = client.get_user_dict(user_id)
     return jsonify({'result': user})
 
 @api.route('/auth', methods=['POST'])
