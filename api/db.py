@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import os
 import time
 import hashlib
+import datetime
 
 USER_CATEGORIES_KEY = "categories"
 
@@ -23,16 +24,28 @@ class MongoDBClient(DBClient):
         self.client = MongoClient(os.environ['DB_HOST'], 27017)
 
 
-    def __clean(self, data, scope):
-        if data is None:
-            return None
+    def __clean(self, data, scope='sec'):
 
-        del data['_id']
+        def perform_clean(dict_item):
+            if data is None:
+                return None
 
-        if scope != 'raw':
-            del data['vk_token']
+            keys_to_delete = ['_id']
 
-        return data
+            if scope != 'raw':
+                keys_to_delete.extend(['vk_token'])
+            
+            for key in keys_to_delete:
+                if key in data:
+                    del data[key]
+
+            return data
+
+        if type(data) is list:
+            return [self.__clean(item, scope) for item in data]
+
+        return perform_clean(data)
+        
 
 
     def get_user_id_by_token(self, token):
@@ -62,7 +75,6 @@ class MongoDBClient(DBClient):
     def get_user(self, user_id):
         users = self.client.db.users
         user_id = str(user_id)
-        print user_id
         user = users.find_one({"id": user_id})
         return user
 
@@ -105,7 +117,47 @@ class MongoDBClient(DBClient):
         user_id = str(user_id)
         liked_id = str(liked_id)
         num = reactions.count({ "$and": [{"id": user_id }, {"reactions.user_id": liked_id}]})
+
+        result_item = {}
         if not num:
-            reactions.update({ "id": user_id },  { "$push": { "reactions": {"user_id": liked_id, "type": reaction_type } }}, upsert=True)
-        return None
+            def check_mutuality():
+                mutually_user = reactions.find_one({ "$and": [{"id": liked_id }, {"reactions.user_id": user_id}, {"reactions.type": "like"}]})
+                if mutually_user:
+                    for item in mutually_user['reactions']:
+                        if item[u'type'] == "like" and item[u'user_id'] == user_id:
+                            item['is_mutually'] = True
+                            break
+                    reactions.update({ "id": liked_id },  mutually_user)
+                    return True
+                return False
+
+            is_mutually = check_mutuality()
+
+            reactions.find_and_modify({ "id": user_id },  { "$push": { "reactions": {
+                "user_id": liked_id, 
+                "type": reaction_type,
+                "timestamp": datetime.datetime.now(),
+                "is_mutually": is_mutually
+                } }}, upsert=True)
+
+            updated_items = reactions.find_one({ "$and": [{"id": user_id }, {"reactions.user_id": liked_id}]})
+
+            for item in updated_items['reactions']:
+                if item[u'type'] == reaction_type and item[u'user_id'] == liked_id:
+                    result_item = item
+                    break
+        return self.__clean(result_item)
+
+    def get_reactions(self, user_id, reaction_type):
+        reactions = self.client.db.reactions
+        user_id = str(user_id)
+        user_reaction = reactions.find_one({ "$and": [{"id": user_id }, {"reactions.type": reaction_type}]})
+        filtered_reactions = [reaction for reaction in user_reaction['reactions'] if reaction['type'] == reaction_type]
+        
+        filled_reactions = []
+        for reaction in filtered_reactions:
+            reaction['user'] = self.get_user_dict(reaction['user_id'])
+            filled_reactions.append(reaction)
+
+        return self.__clean(filled_reactions)
 
