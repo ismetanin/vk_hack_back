@@ -31,6 +31,27 @@
         }
       }
     },
+    "/reactions": {
+      "get": {
+        "summary": "Get Reactions",
+        "description": "",
+        "operationId": "fb37e0c3-26da-4b25-8252-4d8c31fa0c70",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb",
+            "name": "token",
+            "required": false,
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
     "/likes": {
       "post": {
         "summary": "Set Like",
@@ -44,7 +65,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "{\"token\":\"353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb\",\"user_id\":\"123\"}"
+              "default": "{\"token\":\"353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb\",\"user_id\":\"79201190\"}"
             },
             "in": "body",
             "name": "body"
