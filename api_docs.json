@@ -1,0 +1,135 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "VkHachaton",
+    "version": "v0.0.0"
+  },
+  "host": "77.244.217.34",
+  "schemes": [
+    "https"
+  ],
+  "basePath": "/v1",
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get Users",
+        "description": "",
+        "operationId": "6bb5bd1c-8206-4b19-90d3-52ebb7f0b0d1",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7",
+            "name": "token",
+            "required": false,
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "summary": "Get Profile",
+        "description": "",
+        "operationId": "65f72fdb-1da1-420e-b015-8c827e247ba3",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7",
+            "name": "token",
+            "required": false,
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "summary": "Get All Categories",
+        "description": "",
+        "operationId": "effd8da2-03e9-4ad0-8e8e-416104ac3be2",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7",
+            "name": "token",
+            "required": false,
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      },
+      "post": {
+        "summary": "Update Categories",
+        "description": "",
+        "operationId": "054b8db8-64dc-4008-b87f-f4b1d6bf7b5e",
+        "consumes": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "{\n\"token\": \"5db0bf42fb36a02696cf58092fda6f78feacbf3886b8aada6362bcd7\",\n\"ids\": [\"cinema\", \"lol\"]\n}"
+            },
+            "in": "body",
+            "name": "body"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "summary": "Client VK Auth",
+        "description": "",
+        "operationId": "e58311de-74dc-4688-8816-54bbfc962c47",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "default": "application/json",
+            "name": "Accept",
+            "required": false,
+            "in": "header"
+          },
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "{\n  \"token\": \"913cbd35b3996f4db9f8a9c9f7a30aba7f2dd9c99870872d566ba537692d2dab72092494f04244046c2fc\"\n}"
+            },
+            "in": "body",
+            "name": "body"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
