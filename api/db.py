@@ -4,6 +4,8 @@ import os
 import time
 import hashlib
 
+USER_CATEGORIES_KEY = "categories"
+
 class DBClient:
 
     def __init__(self):
@@ -19,6 +21,10 @@ class MongoDBClient(DBClient):
 
     def __init__(self):
         self.client = MongoClient(os.environ['DB_HOST'], 27017)
+
+    def __clean(self, data):
+        del data['_id']
+        return data
 
     def get_user_id_by_token(self, token):
         sessions = self.client.db.sessions
@@ -41,10 +47,13 @@ class MongoDBClient(DBClient):
         
         return user_session['token']
 
-    def get_user(self, id):
+    def get_user(self, user_id):
         users = self.client.db.users
-        user = users.find_one({"id": id})
+        user = users.find_one({"id": user_id})
         return user
+
+    def get_user_dict(self, user_id):
+        return self.__clean(self.get_user(user_id))
 
     def create_user(self, user_dict):
         users = self.client.db.users
@@ -52,3 +61,12 @@ class MongoDBClient(DBClient):
         user = users.find_one(object_id)
         return user
 
+    def update_categories(self, user_id, categories_list):
+        users = self.client.db.users
+        users.update_one({'id': user_id}, {"$set": {USER_CATEGORIES_KEY: categories_list}}, upsert=False)
+
+    def get_user_categories(self, user_id):
+        user = self.get_user(user_id)
+        if user is not None and USER_CATEGORIES_KEY in user:
+            return user[USER_CATEGORIES_KEY]
+        return None

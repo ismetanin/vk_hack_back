@@ -70,12 +70,19 @@ def vk_get_user(vk_token, user_id):
     vk_api = vk.API(session)
     return vk_api.users.get()
 
-def auth_user(vk_token, user_id, user_dict):
-    result_dict = user_dict
-    result_dict['vk_token'] = vk_token
-    result_dict['id'] = user_id
+def map_vk_user_dict(vk_user_dict):
+    result_dict = vk_user_dict
+
+    result_dict['id'] = str(result_dict['uid'])
     del result_dict['uid']
 
+    return result_dict
+
+def auth_user(vk_token, user_id, user_dict):
+    result_dict = map_vk_user_dict(user_dict)
+
+    result_dict['vk_token'] = vk_token
+    
     client = common.get_db()
 
     db_user = client.get_user(user_id)
@@ -91,7 +98,14 @@ def auth_user(vk_token, user_id, user_dict):
 @api.route('/users', methods=['GET'])
 @login_required
 def get_users():
-    return jsonify({'users': users_stub})
+    return jsonify({'result': users_stub})
+
+@api.route('/profile', methods=['GET'])
+@login_required
+def get_profile(user_id):
+    client = common.get_db()
+    user =  client.get_user_dict(user_id)
+    return jsonify({'result': user})
 
 @api.route('/auth', methods=['POST'])
 def get_vk_users():

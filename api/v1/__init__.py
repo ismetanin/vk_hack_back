@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort
 from functools import wraps
-
+import json
 import inspect
 
 api = Blueprint('api', __name__)
@@ -15,6 +15,12 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         token = request.args.get('token')
+
+        if token is None:
+            data = request.data
+            data_dict = json.loads(data)
+            token = data_dict['token']
+
         user_id = get_user_id(token)
         if user_id is None:
             return jsonify({}), 401
