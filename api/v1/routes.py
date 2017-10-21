@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify, abort, request 
 import json
-from . import *
+from . import api, login_required
 import vk
 import api.common as common
 import requests
@@ -88,18 +88,9 @@ def auth_user(vk_token, user_id, user_dict):
     
     return None
 
-def get_user_id(token):
-    client = common.get_db()
-    user_id = client.get_user_id_by_token(token)
-    return user_id
-
 @api.route('/users', methods=['GET'])
-def get_tasks():
-    token = request.args.get('token')
-    user_id = get_user_id(token)
-    if user_id is None:
-        return jsonify({}), 401
-
+@login_required
+def get_users():
     return jsonify({'users': users_stub})
 
 @api.route('/auth', methods=['POST'])
