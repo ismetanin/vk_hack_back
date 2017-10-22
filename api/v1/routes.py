@@ -53,7 +53,7 @@ def get_recomended_users(user):
         non_null_viewed_users = [user_dict for user_dict in not_viewed_users if user_dict['id'] is not None and user_dict['age'] is not None]
         return non_null_viewed_users
 
-    batch_count = 10
+    batch_count = 50
     loaded_count = 0
     result_users = []
     while len(result_users) < batch_count:
