@@ -68,7 +68,7 @@ def map_event(event_dict):
         ]
 
         for value_key, field_name in fields_keys:
-            if value_key in source_dict and source_dict[value_key]:
+            if value_key in source_dict and source_dict[value_key] and source_dict[value_key] is not None:
                 result_fields.append({'name': field_name, 'value': source_dict[value_key]})
 
         return result_fields
