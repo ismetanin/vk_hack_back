@@ -5,6 +5,7 @@ import json
 from . import api, login_required
 import api.common as common
 from .categories import categories
+from datetime import datetime
 
 import requests
 
@@ -18,6 +19,7 @@ def load_kuda_go_events(category, city):
             url="https://kudago.com/public-api/v1.2/events/",
             params={
                 "categories": category,
+                "actual_since": datetime.today(),
                 "fields": "description,price,images,id,title,place,age_restriction,site_url",
             },
         )
