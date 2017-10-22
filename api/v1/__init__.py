@@ -42,3 +42,4 @@ def login_required(f):
 from .routes import *
 from .categories import *
 from .reactions import *
+from .events import *
