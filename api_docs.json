@@ -52,11 +52,65 @@
         }
       }
     },
+    "/events": {
+      "get": {
+        "summary": "Get Events",
+        "description": "",
+        "operationId": "9e8b3f69-1b99-48d5-9a30-70753df41e1b",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb",
+            "name": "token",
+            "required": false,
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "cinema",
+            "name": "category",
+            "required": false,
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
+    "/chat": {
+      "post": {
+        "summary": "Send message",
+        "description": "",
+        "operationId": "10275ee0-76ef-48cd-87ef-286367aa7d68",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "{\"token\":\"353c52240eb1098bb2ee8d13acd56d30be19c1e33c8248f46b7bc4fb\",\"event_id\":\"79201190\",\"recipient_id\":\"40878388\",\"message\":\"teset\"}"
+            },
+            "in": "body",
+            "name": "body"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "no response description was provided for this operation"
+          }
+        }
+      }
+    },
     "/likes": {
       "post": {
         "summary": "Set Like",
         "description": "",
-        "operationId": "10275ee0-76ef-48cd-87ef-286367aa7d68",
+        "operationId": "26680e23-9bda-41c2-b6d2-aa25a4c735eb",
         "consumes": [
           "application/json"
         ],
