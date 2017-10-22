@@ -115,6 +115,25 @@ def get_profile(user_id):
     user = client.get_user_dict(user_id)
     return jsonify({'result': user})
 
+@api.route('/chat', methods=['POST'])
+@login_required
+def create_chat(user):
+    data = request.data
+    data_dict = json.loads(data)
+
+    event_id = data_dict['event_id']
+    recipient_user_id = data_dict['recipient_id']
+    message = data_dict['message']
+    vk_token = user['vk_token']
+
+    session = vk.Session(access_token=vk_token)
+    vk_api = vk.API(session, v='5.68')
+
+    vk_api.messages.send(user_id=recipient_user_id, message=message)
+
+    return jsonify({'result': 1})
+    
+
 @api.route('/auth', methods=['POST'])
 def get_vk_users():
     data = request.data

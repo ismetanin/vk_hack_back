@@ -105,12 +105,16 @@ def map_vk_user_dict(vk_user_dict):
 
         return unicode(city_dict[city_title_value_key])
 
+    def get_chat_value(source_dict):
+        vk_user_id = get_id_value(source_dict)
+        return "https://vk.com/im?sel=%s" % vk_user_id
+
     result_dict = {
         'id': get_id_value(vk_user_dict),
         'name': get_name_value(vk_user_dict),
         'avatarURLStrings': [get_photo_value(vk_user_dict)],
         'gender': get_gender_value(vk_user_dict),
-        'chatId': None,
+        'chatId': get_chat_value(vk_user_dict),
         'city': get_city_value(vk_user_dict),
         'country': get_country_value(vk_user_dict),
         'city_id': get_city_id(vk_user_dict),
