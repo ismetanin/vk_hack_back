@@ -45,10 +45,11 @@ def get_recomended_users(user):
     client = common.get_db()
 
     def load_users(offset, count):
-        vk_users = vk_api.users.search(offset=offset, sort=0, count=count, has_photo=1, age_from=18, age_to=39, fields='photo_200_orig,sex,bdate,city,country', **res_args)['items']
-        vk_users_ids = [str(vk_user['id']) for vk_user in vk_users]
+        vk_users = vk_api.users.search(offset=offset, sort=0, count=count, has_photo=1, age_from=18, age_to=39, fields='photo_200_orig,sex,bdate,city,country,can_write_private_message', **res_args)['items']
+        filtered_vk_users = [vk_user for vk_user in vk_users if vk_user['can_write_private_message']]
+        vk_users_ids = [str(vk_user['id']) for vk_user in filtered_vk_users]
         not_viewed_ids = client.get_not_viewed(user_id, vk_users_ids)
-        not_viewed_vk_users = [vk_user for vk_user in vk_users if str(vk_user['id']) in not_viewed_ids]
+        not_viewed_vk_users = [vk_user for vk_user in filtered_vk_users if str(vk_user['id']) in not_viewed_ids]
         not_viewed_users = [add_mutually_info(user_id, common.map_vk_user_dict(vk_user)) for vk_user in not_viewed_vk_users]
         non_null_viewed_users = [user_dict for user_dict in not_viewed_users if user_dict['id'] is not None and user_dict['age'] is not None]
         return non_null_viewed_users
