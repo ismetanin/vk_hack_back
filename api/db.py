@@ -165,6 +165,10 @@ class MongoDBClient(DBClient):
         reactions = self.client.db.reactions
         user_id = str(user_id)
         user_reaction = reactions.find_one({ "$and": [{"id": user_id }, {"reactions.type": reaction_type}]})
+
+        if user_reaction is None and not user_reaction:
+            return []
+
         filtered_reactions = [reaction for reaction in user_reaction['reactions'] if reaction['type'] == reaction_type]
         
         filled_reactions = []
