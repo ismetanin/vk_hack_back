@@ -11,6 +11,12 @@ from time import sleep
 
 VK_INCORRECT_TOKEN_ID = 15
 
+def add_mutually_info(user_id, target_user_dict):
+    result_user_dict = target_user_dict
+    client = common.get_db()
+    result_user_dict['is_mutually'] = client.is_user_a_likes_b(target_user_dict['id'], user_id)
+    return result_user_dict
+
 def get_recomended_users(user):
     result_users = []
 
@@ -41,7 +47,7 @@ def get_recomended_users(user):
         vk_users_ids = [str(vk_user['id']) for vk_user in vk_users]
         not_viewed_ids = client.get_not_viewed(user_id, vk_users_ids)
         not_viewed_vk_users = [vk_user for vk_user in vk_users if str(vk_user['id']) in not_viewed_ids]
-        not_viewed_users = [common.map_vk_user_dict(vk_user) for vk_user in not_viewed_vk_users]
+        not_viewed_users = [add_mutually_info(user_id, common.map_vk_user_dict(vk_user)) for vk_user in not_viewed_vk_users]
         non_null_viewed_users = [user_dict for user_dict in not_viewed_users if user_dict['id'] is not None and user_dict['age'] is not None]
         return non_null_viewed_users
 

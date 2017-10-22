@@ -161,6 +161,17 @@ class MongoDBClient(DBClient):
         not_viewed_users = list(set(user_ids).difference(viewed_user_ids))
         return not_viewed_users
 
+    def is_user_a_likes_b(self, user_a_id, user_b_id):
+        reactions = self.client.db.reactions
+        mutually_user = reactions.find_one({ "$and": [{"id": user_a_id }, {"reactions.user_id": user_b_id}, {"reactions.type": "like"}]})
+        if mutually_user:
+            for item in mutually_user['reactions']:
+                if item[u'type'] == "like" and item[u'user_id'] == user_b_id:
+                    item['is_mutually'] = True
+                    break
+            return True
+        return False
+
     def get_reactions(self, user_id, reaction_type):
         reactions = self.client.db.reactions
         user_id = str(user_id)
