@@ -46,7 +46,7 @@ def load_kuda_go_events(category):
             url="https://kudago.com/public-api/v1.2/events/",
             params={
                 "categories": category,
-                "fields": "description,price,images,id",
+                "fields": "description,price,images,id,title",
             },
         )
         return json.loads(response.content)
