@@ -8,12 +8,12 @@ import api.common as common
 
 categories = [
     { 'id': u'cinema', 'type': u'cinema', 'title': u'Кино', },
+    { 'id': u'ball', 'type': u'culture', 'title': u'Культура', },
     { 'id': u'sport', 'type': u'sport', 'title': u'Спорт', },
     { 'id': u'festival', 'type': u'festival', 'title': u'Фестиваль', },
-    { 'id': u'culture', 'type': u'culture', 'title': u'Культура', },
-    { 'id': u'humor', 'type': u'humor', 'title': u'Юмор', },
+    { 'id': u'kvn', 'type': u'humor', 'title': u'Юмор', },
     { 'id': u'concert', 'type': u'concert', 'title': u'Концерт', },
-    { 'id': u'food', 'type': u'food', 'title': u'Еда', },
+    { 'id': u'speed-dating', 'type': u'food', 'title': u'Еда', },
     { 'id': u'games', 'type': u'games', 'title': u'Игры', },
 ]
 
