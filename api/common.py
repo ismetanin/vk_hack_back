@@ -43,7 +43,7 @@ def map_vk_user_dict(vk_user_dict):
         return result_gender
 
     def get_photo_value(source_dict):
-        value_key = 'photo_400_orig'
+        value_key = 'photo_200_orig'
         if value_key not in source_dict:
             return None
         return source_dict[value_key]

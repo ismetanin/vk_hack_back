@@ -45,7 +45,7 @@ def get_recomended_users(user):
     client = common.get_db()
 
     def load_users(offset, count):
-        vk_users = vk_api.users.search(offset=offset, sort=0, count=count, has_photo=1, age_from=18, age_to=39, fields='photo_400_orig,sex,bdate,city,country', **res_args)['items']
+        vk_users = vk_api.users.search(offset=offset, sort=0, count=count, has_photo=1, age_from=18, age_to=39, fields='photo_200_orig,sex,bdate,city,country', **res_args)['items']
         vk_users_ids = [str(vk_user['id']) for vk_user in vk_users]
         not_viewed_ids = client.get_not_viewed(user_id, vk_users_ids)
         not_viewed_vk_users = [vk_user for vk_user in vk_users if str(vk_user['id']) in not_viewed_ids]
@@ -84,7 +84,7 @@ def get_vk_server_token(client_id, client_secret):
 def vk_get_user(vk_token, user_id):
     session = vk.Session(access_token=vk_token)
     vk_api = vk.API(session, v='5.68')
-    return vk_api.users.get(fields='photo_400_orig,sex,bdate,city,country')
+    return vk_api.users.get(fields='photo_200_orig,sex,bdate,city,country')
 
 def vk_create_event_post(event):
     vk_group_key = common.VK_GROUP_KEY
