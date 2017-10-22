@@ -4,6 +4,8 @@ from dateutil.relativedelta import relativedelta
 
 VK_CLIENT_SECRET = 'p72cKlxhQF69nEO4psgc'
 VK_CLIENT_ID = '3913450'
+VK_GROUP_KEY = 'e984ac90182454b30f153404a2aadf12c7b712f3822938ee0fed2704458ac51752660d7dd1ce2783d4962'
+VK_GROUP_ID = '-155443427'
 
 def get_db():
     return current_app._database
@@ -41,7 +43,7 @@ def map_vk_user_dict(vk_user_dict):
         return result_gender
 
     def get_photo_value(source_dict):
-        value_key = 'photo_200_orig'
+        value_key = 'photo_400_orig'
         if value_key not in source_dict:
             return None
         return source_dict[value_key]

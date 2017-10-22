@@ -18,8 +18,21 @@ def load_kuda_go_events(category, city):
             url="https://kudago.com/public-api/v1.2/events/",
             params={
                 "categories": category,
-                "fields": "description,price,images,id,title,place,age_restriction",
+                "fields": "description,price,images,id,title,place,age_restriction,site_url",
             },
+        )
+        return json.loads(response.content)
+    except requests.exceptions.RequestException:
+        print('HTTP Request failed')
+
+def load_kuda_go_event(event_id):
+    # KudaGo events list
+    # GET https://kudago.com/public-api/v1.2/events/
+
+    try:
+        response = requests.get(
+            url="https://kudago.com/public-api/v1.3/events/%s/" % event_id,
+            params={},
         )
         return json.loads(response.content)
     except requests.exceptions.RequestException:
@@ -73,6 +86,12 @@ def map_event(event_dict):
 
         return result_fields
 
+    def get_url_value(source_dict):
+        value_key = 'site_url'
+        if value_key not in source_dict:
+            return None
+        return source_dict[value_key]
+
     result_dict = {
         'id': get_id_value(event_dict),
         'title': get_title_value(event_dict),
@@ -80,6 +99,7 @@ def map_event(event_dict):
         'score': get_score_value(event_dict),
         'summary': get_summary_value(event_dict),
         'fields': get_fields_value(event_dict),
+        'url': get_url_value(event_dict)
     }
 
     return result_dict
