@@ -153,11 +153,12 @@ class MongoDBClient(DBClient):
         user_id = str(user_id)
         user_reaction = reactions.find_one({ "$and": [{"id": user_id }]})
 
+        if not user_reaction or user_reaction is None:
+            return user_ids
+
         viewed_user_ids = set([reaction['user_id'] for reaction in user_reaction['reactions']])
 
-        print viewed_user_ids
         not_viewed_users = list(set(user_ids).difference(viewed_user_ids))
-        print not_viewed_users
         return not_viewed_users
 
     def get_reactions(self, user_id, reaction_type):
