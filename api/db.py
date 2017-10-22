@@ -176,9 +176,7 @@ class MongoDBClient(DBClient):
         reactions = self.client.db.reactions
         user_id = str(user_id)
         user_reaction = reactions.find_one({ "$and": [{"id": user_id }, {"reactions.type": reaction_type}]})
-
-        if user_reaction is None and not user_reaction:
-            return []
+        # user_reactions = list(reactions.find({ "$and": [{"reactions.user_id": user_id}, {"reactions.type": reaction_type}]}))
 
         filtered_reactions = [reaction for reaction in user_reaction['reactions'] if reaction['type'] == reaction_type]
         
@@ -189,3 +187,15 @@ class MongoDBClient(DBClient):
 
         return self.__clean(filled_reactions)
 
+    def get_post_by_event_id(self, event_id):
+        event_posts = self.client.db.event_posts
+        event_id = str(event_id)
+        event_post_object = event_posts.find_one({"event_id": event_id})
+        return event_post_object
+
+    def save_post_with_event_id(self, event_id, post_id):
+        event_posts = self.client.db.event_posts
+        event_id = str(event_id)
+        post_id = str(post_id)
+        result_dict = {"event_id": event_id, "post_id": post_id}
+        event_posts.insert_one(result_dict).inserted_id

@@ -136,12 +136,22 @@ def create_chat(user):
     data = request.data
     data_dict = json.loads(data)
 
+    client = common.get_db()
+
     object_id = None
     if 'event_id' in data_dict and data_dict['event_id']:
         event_id = data_dict['event_id']
         event = ev.map_event(ev.load_kuda_go_event(event_id))
-        post_dict = vk_create_event_post(event)
-        object_id = "wall%s_%s,%s" % (common.VK_GROUP_ID, post_dict['post_id'], event['image'])
+        event_post_dict = client.get_post_by_event_id(event_id)
+
+        if event_post_dict is None and not event_post_dict:
+            post_dict = vk_create_event_post(event)
+            post_id = "wall%s_%s" % (common.VK_GROUP_ID, post_dict['post_id'])
+            client.save_post_with_event_id(event_id, post_id)
+        else:
+            post_id = event_post_dict['post_id']
+        
+        object_id = "%s,%s" % (post_id, event['image'])
     
     recipient_user_id = data_dict['recipient_id']
     message = data_dict['message']
